@@ -44,6 +44,13 @@ Refer to technology-specific instruction files:
 - Consistent spacing and visual hierarchy
 - Responsive design that works on mobile, tablet, and desktop
 
+### Commenting and Documentation
+
+- Comment the intent behind a component, not the mechanics of the markup underneath it.
+- Explain why a decision exists, which edge case it handles, or what trade-off it makes; avoid comments that simply rephrase the next lines of code.
+- Use comments to capture non-obvious UI reasoning, accessibility decisions, or compatibility constraints.
+- Remove stale comments in the same change that updates the related component or logic.
+
 ### Component Reusability
 
 - Create reusable components for common UI patterns

@@ -34,6 +34,14 @@ ALL UI components MUST use dark theme colors:
 - Gradients for visual interest: `bg-gradient-to-br from-slate-800 to-slate-900`
 - Backdrop effects: `backdrop-blur-sm bg-slate-900/50`
 
+## TypeScript and Documentation Standards
+
+- Use TypeScript with explicit function parameter and return types, especially in `db/` and `src/lib/`.
+- Prefer typed interfaces for object contracts (`interface Props`, `interface Game`), especially when the type is exposed across files or components.
+- Keep code formatting consistent with the repo’s ESLint/TypeScript setup: semicolons, trailing commas, and readable multi-line declarations.
+- Keep comments intentional: explain why a decision exists or which edge case it addresses, not how a line of code works.
+- The project uses ESLint’s recommended TypeScript rules, and any additional rules should stay minimal, explicit, and compatible with the current codebase.
+
 ### Responsive Design
 
 - Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`
