@@ -94,6 +94,24 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter games by a case-insensitive title search and show an empty state', async ({ page }) => {
+    await page.goto('/');
+
+    const searchInput = page.getByTestId('game-search-input');
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill('CODE QUEST');
+
+    await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(1);
+    await expect(page.locator('[data-testid="game-card"]:visible [data-testid="game-title"]')).toHaveText('Code Quest Odyssey');
+    await expect(page.getByTestId('active-filters')).toContainText('title matching "CODE QUEST"');
+
+    await searchInput.fill('no matching game');
+
+    await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(0);
+    await expect(page.getByTestId('filter-empty-state')).toBeVisible();
+    await expect(page.getByTestId('active-filters')).toContainText('title matching "no matching game"');
+  });
+
   test('should display game details with all required information', async ({ page }) => {
     await test.step('Navigate to specific game details page', async () => {
       await page.goto('/game/1');

@@ -29,7 +29,20 @@ const games = await getAllGames(getDatabase());
         <p class="text-xs text-slate-400">Select any combination of options.</p>
       </div>
 
-        <div aria-label="Game filters" class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+      <div class="mb-5">
+        <label for="game-search" class="mb-2 block text-sm font-semibold text-slate-200">Search by title</label>
+        <input
+          id="game-search"
+          type="search"
+          name="title"
+          placeholder="Search games..."
+          autocomplete="off"
+          data-testid="game-search-input"
+          class="w-full rounded-lg border border-slate-600 bg-slate-900/70 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div aria-label="Game filters" class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
           <fieldset data-testid="category-filter" class="min-w-0">
             <legend class="mb-2 block text-sm font-semibold text-slate-200">Categories</legend>
             <div class="flex flex-wrap gap-2">
@@ -113,28 +126,33 @@ const games = await getAllGames(getDatabase());
     const publisherOptions = Array.from(document.querySelectorAll<HTMLInputElement>('[data-testid="publisher-filter-option"]'));
     const applyButton = document.querySelector<HTMLButtonElement>('[data-testid="apply-filters-button"]');
     const clearButton = document.querySelector<HTMLButtonElement>('[data-testid="clear-filters-button"]');
+    const searchInput = document.querySelector<HTMLInputElement>('[data-testid="game-search-input"]');
     const status = document.querySelector<HTMLElement>('[data-testid="active-filters"]');
     const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="game-card"]'));
     const emptyState = document.querySelector<HTMLElement>('[data-testid="filter-empty-state"]');
     const gamesGrid = document.querySelector<HTMLElement>('[data-testid="games-grid"]');
 
-    if (categoryOptions.length === 0 || publisherOptions.length === 0 || !applyButton || !clearButton || !status) {
+    if (categoryOptions.length === 0 || publisherOptions.length === 0 || !applyButton || !clearButton || !searchInput || !status) {
       throw new Error('Filter controls are missing from the homepage.');
     }
 
     const safeStatus = status;
+    const safeSearchInput = searchInput;
 
     function getSelectedValues(options: HTMLInputElement[]): number[] {
       return options.filter((option) => option.checked).map((option) => Number(option.value)).filter((value) => value > 0);
     }
 
-    function updateStatus(selectedCategories: number[], selectedPublishers: number[]) {
-      if (selectedCategories.length === 0 && selectedPublishers.length === 0) {
+    function updateStatus(selectedCategories: number[], selectedPublishers: number[], titleQuery: string) {
+      if (selectedCategories.length === 0 && selectedPublishers.length === 0 && titleQuery.length === 0) {
         safeStatus.textContent = 'Showing all games';
         return;
       }
 
       const labels: string[] = [];
+      if (titleQuery.length > 0) {
+        labels.push(`title matching "${titleQuery}"`);
+      }
       if (selectedCategories.length > 0) {
         labels.push(`${selectedCategories.length} category selection${selectedCategories.length > 1 ? 's' : ''}`);
       }
@@ -147,6 +165,7 @@ const games = await getAllGames(getDatabase());
     function filterCards() {
       const selectedCategories = getSelectedValues(categoryOptions);
       const selectedPublishers = getSelectedValues(publisherOptions);
+      const titleQuery = safeSearchInput.value.trim();
       let visibleCount = 0;
 
       cards.forEach((card) => {
@@ -154,7 +173,9 @@ const games = await getAllGames(getDatabase());
         const cardPublisherId = Number(card.dataset.gamePublisherId || 0);
         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(cardCategoryId);
         const publisherMatch = selectedPublishers.length === 0 || selectedPublishers.includes(cardPublisherId);
-        const isVisible = categoryMatch && publisherMatch;
+        const titleMatch = titleQuery.length === 0
+          || (card.dataset.gameTitle || '').toLocaleLowerCase().includes(titleQuery.toLocaleLowerCase());
+        const isVisible = categoryMatch && publisherMatch && titleMatch;
 
         card.style.display = isVisible ? '' : 'none';
         if (isVisible) {
@@ -167,10 +188,13 @@ const games = await getAllGames(getDatabase());
       }
 
       if (emptyState) {
-        emptyState.classList.toggle('hidden', visibleCount > 0 || (selectedCategories.length === 0 && selectedPublishers.length === 0));
+        emptyState.classList.toggle(
+          'hidden',
+          visibleCount > 0 || (selectedCategories.length === 0 && selectedPublishers.length === 0 && titleQuery.length === 0),
+        );
       }
 
-      updateStatus(selectedCategories, selectedPublishers);
+      updateStatus(selectedCategories, selectedPublishers, titleQuery);
     }
 
     function resetFilters() {
@@ -180,11 +204,13 @@ const games = await getAllGames(getDatabase());
       publisherOptions.forEach((option) => {
         option.checked = false;
       });
+      safeSearchInput.value = '';
       filterCards();
     }
 
     categoryOptions.forEach((option) => option.addEventListener('change', filterCards));
     publisherOptions.forEach((option) => option.addEventListener('change', filterCards));
+    safeSearchInput.addEventListener('input', filterCards);
     applyButton.addEventListener('click', filterCards);
     clearButton.addEventListener('click', resetFilters);
     filterCards();
