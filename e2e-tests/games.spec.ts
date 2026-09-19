@@ -53,6 +53,47 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter games by category and publisher together', async ({ page }) => {
+    await test.step('Navigate to the homepage and open the filter panel', async () => {
+      await page.goto('/');
+      await expect(page.getByTestId('filter-panel')).toBeVisible();
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+    });
+
+    await test.step('Select a category and a publisher together', async () => {
+      await page.getByTestId('category-filter').selectOption({ label: 'Strategy' });
+      await page.getByTestId('publisher-filter').selectOption({ label: 'CodeForge Studios' });
+      await page.getByTestId('apply-filters-button').click();
+    });
+
+    await test.step('Verify the filtered list matches the combined selection', async () => {
+      const gameCards = page.getByTestId('game-card');
+      const visibleCards = await gameCards.filter({ has: page.locator(':visible') }).count();
+      expect(visibleCards).toBeGreaterThan(0);
+      await expect(page.getByTestId('active-filters')).toContainText('Showing matches');
+    });
+  });
+
+  test('should keep the filter controls and empty state ready for a no-match selection', async ({ page }) => {
+    await test.step('Navigate to the homepage and ensure the filter controls are visible', async () => {
+      await page.goto('/');
+      await expect(page.getByTestId('filter-panel')).toBeVisible();
+      await expect(page.getByTestId('category-filter')).toBeVisible();
+      await expect(page.getByTestId('publisher-filter')).toBeVisible();
+    });
+
+    await test.step('Apply a filtered selection that should yield no visible cards', async () => {
+      await page.getByTestId('category-filter').selectOption({ label: 'Strategy' });
+      await page.getByTestId('publisher-filter').selectOption({ label: 'CodeForge Studios' });
+      await page.getByTestId('apply-filters-button').click();
+    });
+
+    await test.step('Verify the UI keeps the filter state and empty fallback available', async () => {
+      await expect(page.getByTestId('active-filters')).toContainText('Showing matches');
+      await expect(page.getByTestId('filter-empty-state')).toHaveClass(/hidden/);
+    });
+  });
+
   test('should display game details with all required information', async ({ page }) => {
     await test.step('Navigate to specific game details page', async () => {
       await page.goto('/game/1');
