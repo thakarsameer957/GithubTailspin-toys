@@ -61,8 +61,8 @@ test.describe('Game Listing and Navigation', () => {
     });
 
     await test.step('Select a category and a publisher together', async () => {
-      await page.getByTestId('category-filter').selectOption({ label: 'Strategy' });
-      await page.getByTestId('publisher-filter').selectOption({ label: 'CodeForge Studios' });
+      await page.getByLabel('Strategy', { exact: true }).check();
+      await page.getByLabel('CodeForge Studios', { exact: true }).check();
       await page.getByTestId('apply-filters-button').click();
     });
 
@@ -83,8 +83,8 @@ test.describe('Game Listing and Navigation', () => {
     });
 
     await test.step('Apply a filtered selection that should yield no visible cards', async () => {
-      await page.getByTestId('category-filter').selectOption({ label: 'Strategy' });
-      await page.getByTestId('publisher-filter').selectOption({ label: 'CodeForge Studios' });
+      await page.getByLabel('Strategy', { exact: true }).check();
+      await page.getByLabel('CodeForge Studios', { exact: true }).check();
       await page.getByTestId('apply-filters-button').click();
     });
 
