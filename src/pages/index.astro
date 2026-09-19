@@ -29,7 +29,7 @@ const games = await getAllGames(getDatabase());
         <p class="text-xs text-slate-400">Use Ctrl/Command to select multiple options.</p>
       </div>
 
-      <fieldset aria-label="Game filters" class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+      <fieldset aria-label="Game filters" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
         <legend class="sr-only">Game filters</legend>
         <div class="min-w-0">
           <label for="category-filter" class="mb-2 block text-sm font-medium text-slate-200">Category</label>
@@ -39,7 +39,7 @@ const games = await getAllGames(getDatabase());
             multiple
             size={Math.min(categories.length, 5)}
             data-testid="category-filter"
-            class="h-32 w-full rounded-lg border border-slate-600 bg-slate-950/70 px-3 py-2 text-slate-100 shadow-inner focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="h-28 w-full rounded-lg border border-slate-600 bg-slate-950/70 px-2 py-2 text-sm text-slate-100 shadow-inner focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:h-32 sm:px-3"
           >
             {categories.map((category) => (
               <option value={String(category.id)}>{category.name}</option>
@@ -55,7 +55,7 @@ const games = await getAllGames(getDatabase());
             multiple
             size={Math.min(publishers.length, 5)}
             data-testid="publisher-filter"
-            class="h-32 w-full rounded-lg border border-slate-600 bg-slate-950/70 px-3 py-2 text-slate-100 shadow-inner focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="h-28 w-full rounded-lg border border-slate-600 bg-slate-950/70 px-2 py-2 text-sm text-slate-100 shadow-inner focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:h-32 sm:px-3"
           >
             {publishers.map((publisher) => (
               <option value={String(publisher.id)}>{publisher.name}</option>
@@ -63,7 +63,7 @@ const games = await getAllGames(getDatabase());
           </select>
         </div>
 
-        <div class="flex gap-2 lg:pb-0">
+        <div class="col-span-2 flex gap-2 lg:col-span-1 lg:pb-0">
           <button
             type="button"
             data-testid="apply-filters-button"
