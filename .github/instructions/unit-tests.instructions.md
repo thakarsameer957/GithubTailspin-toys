@@ -77,6 +77,12 @@ describe('getAllGames', () => {
 - Ordering guarantees (alphabetical by title) — static builds depend on this being deterministic
 - Determinism of seed-derived values
 
+## Commenting and Documentation
+
+- Comments in tests should explain intent, setup rationale, or a non-obvious assertion, not mirror the exact test steps in English.
+- If a test is documenting a regression or a specific edge case, prefer a clear title and a short comment that captures why the scenario matters.
+- Remove stale comments when the test changes; a comment should describe the reasoning behind the test, not the mechanics of the code itself.
+
 ## Best Practices
 
 - Follow Arrange-Act-Assert.
