@@ -20,64 +20,82 @@ const games = await getAllGames(getDatabase());
       subtitle="Find your next game! And maybe even back one! Explore our collection!"
     />
 
-    <div class="mb-8 rounded-xl border border-slate-700 bg-slate-800/60 p-5 shadow-lg" data-testid="filter-panel">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div class="mb-8 rounded-2xl border border-slate-700 bg-slate-800/60 p-4 shadow-lg sm:p-5" data-testid="filter-panel">
+      <div class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
         <div>
           <h2 class="text-xl font-semibold text-slate-100">Filter games</h2>
           <p class="text-sm text-slate-400">Narrow the catalog by category, publisher, or both.</p>
         </div>
+        <p class="text-xs text-slate-400">Select any combination of options.</p>
+      </div>
 
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end" aria-label="Game filters">
-          <div>
-            <label for="category-filter" class="mb-2 block text-sm font-medium text-slate-200">Category</label>
-            <select
-              id="category-filter"
-              name="category"
-              multiple
-              size={Math.min(categories.length + 1, 6)}
-              data-testid="category-filter"
-              class="min-w-52 rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+      <div class="mb-5">
+        <label for="game-search" class="mb-2 block text-sm font-semibold text-slate-200">Search by title</label>
+        <input
+          id="game-search"
+          type="search"
+          name="title"
+          placeholder="Search games..."
+          autocomplete="off"
+          data-testid="game-search-input"
+          class="w-full rounded-lg border border-slate-600 bg-slate-900/70 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div aria-label="Game filters" class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+          <fieldset data-testid="category-filter" class="min-w-0">
+            <legend class="mb-2 block text-sm font-semibold text-slate-200">Categories</legend>
+            <div class="flex flex-wrap gap-2">
               {categories.map((category) => (
-                <option value={String(category.id)}>{category.name}</option>
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-600 px-3 py-2 text-sm text-slate-200 transition-colors hover:border-blue-400 hover:bg-slate-900 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500">
+                  <input
+                    type="checkbox"
+                    name="category"
+                    value={String(category.id)}
+                    data-testid="category-filter-option"
+                    class="h-4 w-4 accent-blue-500"
+                  />
+                  <span>{category.name}</span>
+                </label>
               ))}
-            </select>
-          </div>
+            </div>
+          </fieldset>
 
-          <div>
-            <label for="publisher-filter" class="mb-2 block text-sm font-medium text-slate-200">Publisher</label>
-            <select
-              id="publisher-filter"
-              name="publisher"
-              multiple
-              size={Math.min(publishers.length + 1, 6)}
-              data-testid="publisher-filter"
-              class="min-w-52 rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+          <fieldset data-testid="publisher-filter" class="min-w-0">
+            <legend class="mb-2 block text-sm font-semibold text-slate-200">Publishers</legend>
+            <div class="flex flex-wrap gap-2">
               {publishers.map((publisher) => (
-                <option value={String(publisher.id)}>{publisher.name}</option>
+                <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-600 px-3 py-2 text-sm text-slate-200 transition-colors hover:border-blue-400 hover:bg-slate-900 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500">
+                  <input
+                    type="checkbox"
+                    name="publisher"
+                    value={String(publisher.id)}
+                    data-testid="publisher-filter-option"
+                    class="h-4 w-4 accent-blue-500"
+                  />
+                  <span>{publisher.name}</span>
+                </label>
               ))}
-            </select>
-          </div>
+            </div>
+          </fieldset>
 
-          <div class="flex gap-2">
+          <div class="flex gap-2 lg:pb-0">
             <button
               type="button"
               data-testid="apply-filters-button"
-              class="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              class="flex-1 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 lg:flex-none"
             >
               Apply filters
             </button>
             <button
               type="button"
               data-testid="clear-filters-button"
-              class="rounded-lg border border-slate-600 bg-slate-900 px-4 py-2 font-medium text-slate-200 transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+              class="whitespace-nowrap rounded-lg border border-slate-600 bg-transparent px-3 py-2 font-medium text-blue-400 transition-colors hover:bg-slate-900 hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
-              Clear
+              Clear filters
             </button>
           </div>
         </div>
-      </div>
     </div>
 
     <div>
@@ -104,34 +122,37 @@ const games = await getAllGames(getDatabase());
   </div>
 
   <script>
-    const categorySelect = document.querySelector<HTMLSelectElement>('[data-testid="category-filter"]');
-    const publisherSelect = document.querySelector<HTMLSelectElement>('[data-testid="publisher-filter"]');
+    const categoryOptions = Array.from(document.querySelectorAll<HTMLInputElement>('[data-testid="category-filter-option"]'));
+    const publisherOptions = Array.from(document.querySelectorAll<HTMLInputElement>('[data-testid="publisher-filter-option"]'));
     const applyButton = document.querySelector<HTMLButtonElement>('[data-testid="apply-filters-button"]');
     const clearButton = document.querySelector<HTMLButtonElement>('[data-testid="clear-filters-button"]');
+    const searchInput = document.querySelector<HTMLInputElement>('[data-testid="game-search-input"]');
     const status = document.querySelector<HTMLElement>('[data-testid="active-filters"]');
     const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="game-card"]'));
     const emptyState = document.querySelector<HTMLElement>('[data-testid="filter-empty-state"]');
     const gamesGrid = document.querySelector<HTMLElement>('[data-testid="games-grid"]');
 
-    if (!categorySelect || !publisherSelect || !applyButton || !clearButton || !status) {
+    if (categoryOptions.length === 0 || publisherOptions.length === 0 || !applyButton || !clearButton || !searchInput || !status) {
       throw new Error('Filter controls are missing from the homepage.');
     }
 
-    const safeCategorySelect = categorySelect;
-    const safePublisherSelect = publisherSelect;
     const safeStatus = status;
+    const safeSearchInput = searchInput;
 
-    function getSelectedValues(select: HTMLSelectElement): number[] {
-      return Array.from(select.selectedOptions).map((option) => Number(option.value)).filter((value) => value > 0);
+    function getSelectedValues(options: HTMLInputElement[]): number[] {
+      return options.filter((option) => option.checked).map((option) => Number(option.value)).filter((value) => value > 0);
     }
 
-    function updateStatus(selectedCategories: number[], selectedPublishers: number[]) {
-      if (selectedCategories.length === 0 && selectedPublishers.length === 0) {
+    function updateStatus(selectedCategories: number[], selectedPublishers: number[], titleQuery: string) {
+      if (selectedCategories.length === 0 && selectedPublishers.length === 0 && titleQuery.length === 0) {
         safeStatus.textContent = 'Showing all games';
         return;
       }
 
       const labels: string[] = [];
+      if (titleQuery.length > 0) {
+        labels.push(`title matching "${titleQuery}"`);
+      }
       if (selectedCategories.length > 0) {
         labels.push(`${selectedCategories.length} category selection${selectedCategories.length > 1 ? 's' : ''}`);
       }
@@ -142,8 +163,9 @@ const games = await getAllGames(getDatabase());
     }
 
     function filterCards() {
-      const selectedCategories = getSelectedValues(safeCategorySelect);
-      const selectedPublishers = getSelectedValues(safePublisherSelect);
+      const selectedCategories = getSelectedValues(categoryOptions);
+      const selectedPublishers = getSelectedValues(publisherOptions);
+      const titleQuery = safeSearchInput.value.trim();
       let visibleCount = 0;
 
       cards.forEach((card) => {
@@ -151,7 +173,9 @@ const games = await getAllGames(getDatabase());
         const cardPublisherId = Number(card.dataset.gamePublisherId || 0);
         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(cardCategoryId);
         const publisherMatch = selectedPublishers.length === 0 || selectedPublishers.includes(cardPublisherId);
-        const isVisible = categoryMatch && publisherMatch;
+        const titleMatch = titleQuery.length === 0
+          || (card.dataset.gameTitle || '').toLocaleLowerCase().includes(titleQuery.toLocaleLowerCase());
+        const isVisible = categoryMatch && publisherMatch && titleMatch;
 
         card.style.display = isVisible ? '' : 'none';
         if (isVisible) {
@@ -164,24 +188,29 @@ const games = await getAllGames(getDatabase());
       }
 
       if (emptyState) {
-        emptyState.classList.toggle('hidden', visibleCount > 0 || (selectedCategories.length === 0 && selectedPublishers.length === 0));
+        emptyState.classList.toggle(
+          'hidden',
+          visibleCount > 0 || (selectedCategories.length === 0 && selectedPublishers.length === 0 && titleQuery.length === 0),
+        );
       }
 
-      updateStatus(selectedCategories, selectedPublishers);
+      updateStatus(selectedCategories, selectedPublishers, titleQuery);
     }
 
     function resetFilters() {
-      Array.from(safeCategorySelect.options).forEach((option) => {
-        option.selected = false;
+      categoryOptions.forEach((option) => {
+        option.checked = false;
       });
-      Array.from(safePublisherSelect.options).forEach((option) => {
-        option.selected = false;
+      publisherOptions.forEach((option) => {
+        option.checked = false;
       });
+      safeSearchInput.value = '';
       filterCards();
     }
 
-    safeCategorySelect.addEventListener('change', filterCards);
-    safePublisherSelect.addEventListener('change', filterCards);
+    categoryOptions.forEach((option) => option.addEventListener('change', filterCards));
+    publisherOptions.forEach((option) => option.addEventListener('change', filterCards));
+    safeSearchInput.addEventListener('input', filterCards);
     applyButton.addEventListener('click', filterCards);
     clearButton.addEventListener('click', resetFilters);
     filterCards();

@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, like } from 'drizzle-orm';
 import type { Database } from './db';
 import { games, categories, publishers } from '../../db/schema';
 import type { Category, Game, Publisher } from '../types/game';
@@ -28,10 +28,15 @@ type GameSelectionRow = {
 export interface GameFilters {
     categoryIds?: number[];
     publisherIds?: number[];
+    titleQuery?: string;
 }
 
 function normalizeIds(ids?: number[]): number[] {
     return [...new Set((ids ?? []).filter((id) => Number.isInteger(id) && id > 0))];
+}
+
+function normalizeTitleQuery(query?: string): string {
+    return query?.trim() ?? '';
 }
 
 function mapGame(row: GameSelectionRow): Game {
@@ -62,8 +67,9 @@ function baseGamesQuery(db: Database) {
 function applyGameFilters(query: ReturnType<typeof baseGamesQuery>, filters: GameFilters = {}) {
     const categoryIds = normalizeIds(filters.categoryIds);
     const publisherIds = normalizeIds(filters.publisherIds);
+    const titleQuery = normalizeTitleQuery(filters.titleQuery);
 
-    if (categoryIds.length === 0 && publisherIds.length === 0) {
+    if (categoryIds.length === 0 && publisherIds.length === 0 && titleQuery.length === 0) {
         return query;
     }
 
@@ -75,6 +81,10 @@ function applyGameFilters(query: ReturnType<typeof baseGamesQuery>, filters: Gam
 
     if (publisherIds.length > 0) {
         conditions.push(inArray(games.publisherId, publisherIds));
+    }
+
+    if (titleQuery.length > 0) {
+        conditions.push(like(games.title, `%${titleQuery}%`));
     }
 
     return query.where(and(...conditions));

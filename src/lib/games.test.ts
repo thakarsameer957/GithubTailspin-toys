@@ -122,6 +122,20 @@ describe('games data-access helpers', () => {
         expect(filtered).toEqual([]);
     });
 
+    it('filters games by title without regard to case or surrounding whitespace', async () => {
+        await seedGames(db, 3);
+
+        const filtered = await getAllGames(db, { titleQuery: '  gAmE 02  ' });
+
+        expect(filtered.map((game) => game.title)).toEqual(['Game 02']);
+    });
+
+    it('returns an empty list when no title matches the search query', async () => {
+        await seedGames(db, 2);
+
+        expect(await getAllGames(db, { titleQuery: 'missing' })).toEqual([]);
+    });
+
     it('fetches a single game by id', async () => {
         await seedGames(db, 2);
         const ids = await getAllGameIds(db);
